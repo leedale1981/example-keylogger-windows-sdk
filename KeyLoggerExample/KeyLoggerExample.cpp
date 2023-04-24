@@ -8,13 +8,12 @@ HHOOK KeyboardHook;
 int main(int argc, char* argv[])
 {
     KeyboardHook = SetWindowsHookExA(
-            WH_KEYBOARD_LL, // low-level keyboard input events
-            KeyboardProc, // pointer to the hook procedure
-            GetModuleHandle(NULL), // A handle to the DLL containing the hook procedure 
-            NULL //desktop apps, if this parameter is zero
+            WH_KEYBOARD_LL,
+            KeyboardProc,
+            GetModuleHandle(NULL),
+            NULL
             );
     if (!KeyboardHook){
-        // Hook returned NULL and failed
         std::cout << "Could not get Keyboard Hook." << std::endl;
     }
     else {
