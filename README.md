@@ -15,6 +15,6 @@ To make this work the WH_KEYBOARD_LL hook type can be used to receive messages f
 As part of any malware analysis you will want to open the binary up in a tool like PEView. If the binary was created as a Windows executable then the PE file structure should be visible within PEView. As part of the PE file structure is a list of dynamically linked libraries and function names that are used from the Windows SDK.
 As you can see below SetWindosHookExA is being used in our example application.
 
-
+![Example from PEView](/example.jpg)
 
 SetWindowsHookExA shows in the PE file structure.This is a good indicator that the malware may be using key logging.
