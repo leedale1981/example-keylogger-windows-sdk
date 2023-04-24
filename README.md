@@ -1,4 +1,4 @@
-# Malware anslysis of key loggers
+# Malware analysis of key loggers
 
 When analysing a malware sample, and interesting function call to look for is the function
 
